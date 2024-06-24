@@ -1,16 +1,16 @@
 project(
-	'wfplug_squeek',
+    'wfplug_squeek',
     'c',
-	'cpp',
-	version: '0.8.0',
-	license: 'MIT',
-	meson_version: '>=0.51.0',
-	default_options: [
-		'cpp_std=c++17',
+    'cpp',
+    version: '0.8.0',
+    license: 'MIT',
+    meson_version: '>=0.51.0',
+    default_options: [
+        'cpp_std=c++17',
         'c_std=c11',
-		'warning_level=2',
-		'werror=false',
-	],
+        'warning_level=2',
+        'werror=false',
+    ],
 )
 
 gtkmm = dependency('gtkmm-3.0', version: '>=3.24')
