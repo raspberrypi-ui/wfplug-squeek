@@ -58,7 +58,7 @@ static void sb_cb_name_owned (GDBusConnection *conn, const gchar *name, const gc
     GError *err = NULL;
     proxy = g_dbus_proxy_new_sync (conn, G_DBUS_PROXY_FLAGS_NONE, NULL, name, "/sm/puri/OSK0", "sm.puri.OSK0", NULL, &err);
     if (err) printf ("%s\n", err->message);
-    gtk_widget_show (GTK_WIDGET (user_data));
+    gtk_widget_show_all (GTK_WIDGET (user_data));
 }
 
 /* Callback for BlueZ disappearing on D-Bus */
