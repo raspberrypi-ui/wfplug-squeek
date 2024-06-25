@@ -6,6 +6,7 @@ extern "C" {
 
     WayfireWidget *create () { return new WayfireSqueek; }
     void destroy (WayfireWidget *w) { delete w; }
+
     static constexpr conf_table_t conf_table[1] = {
         {CONF_NONE, NULL,       NULL}
     };
