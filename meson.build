@@ -41,3 +41,4 @@ add_project_arguments('-DPACKAGE_LOCALE_DIR="' + share_dir + '/locale"', languag
 add_project_arguments('-DPACKAGE_LOCALE_DIR="' + share_dir + '/locale"', language : 'cpp')
 
 subdir('src')
+subdir('po')

@@ -71,6 +71,11 @@ static void sb_cb_name_unowned (GDBusConnection *, const gchar *name, gpointer u
 
 void WayfireSqueek::init (Gtk::HBox *container)
 {
+    setlocale (LC_ALL, "");
+    bindtextdomain (GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR);
+    bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
+    textdomain (GETTEXT_PACKAGE);
+
     /* Create the button */
     plugin = std::make_unique <Gtk::Button> ();
     container->pack_start (*plugin, false, false);
@@ -79,6 +84,7 @@ void WayfireSqueek::init (Gtk::HBox *container)
     icon = std::make_unique <Gtk::Image> ();
     plugin->add (*icon.get());
     plugin->signal_clicked().connect (sigc::mem_fun (*this, &WayfireSqueek::on_button_press_event));
+    plugin->set_tooltip_text (_("Click to show or hide the virtual keyboard"));
 
     /* Setup structure */
     icon_timer = Glib::signal_idle().connect (sigc::mem_fun (*this, &WayfireSqueek::set_icon));
