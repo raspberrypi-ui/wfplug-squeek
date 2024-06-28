@@ -13,9 +13,6 @@ project(
     ],
 )
 
-gtkmm = dependency('gtkmm-3.0', version: '>=3.24')
-deps = [ gtkmm ]
-
 incdir = include_directories('/usr/include/wf-panel-pi')
 
 add_project_arguments(['-Wno-pedantic', '-Wno-unused-parameter', '-Wno-parentheses'], language: 'cpp')
