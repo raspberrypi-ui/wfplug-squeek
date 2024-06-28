@@ -19,11 +19,7 @@ add_project_arguments(['-Wno-pedantic', '-Wno-unused-parameter', '-Wno-parenthes
 
 share_dir = join_paths(get_option('prefix'), 'share')
 resource_dir = join_paths(share_dir, 'wf-panel-pi')
-applications_dir = join_paths(share_dir, 'applications')
 metadata_dir = join_paths(resource_dir, 'metadata')
-ui_dir = join_paths(resource_dir, 'ui')
-icon_dir = join_paths(resource_dir, 'icons')
-sysconf_dir = join_paths(get_option('prefix'), get_option('sysconfdir'))
 
 gettext_package = meson.project_name()
 
