@@ -40,13 +40,16 @@ bool WayfireSqueek::set_icon (void)
 void WayfireSqueek::on_button_press_event (void)
 {
     GError *err = NULL;
+    GVariant *val;
     gboolean res;
 
-    GVariant *val = g_dbus_proxy_get_cached_property (proxy, "Visible");
+    val = g_dbus_proxy_get_cached_property (proxy, "Visible");
     g_variant_get (val, "b", &res);
+    g_variant_unref (val);
 
-    GVariant *set = g_variant_new ("(b)", !res);
-    g_dbus_proxy_call_sync (proxy, "SetVisible", set, G_DBUS_CALL_FLAGS_NONE, -1, NULL, &err);
+    val = g_variant_new ("(b)", !res);
+    g_dbus_proxy_call_sync (proxy, "SetVisible", val, G_DBUS_CALL_FLAGS_NONE, -1, NULL, &err);
+    g_variant_unref (val);
     if (err) printf ("%s\n", err->message);
 }
 
