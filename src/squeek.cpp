@@ -1,6 +1,9 @@
 #include <glibmm.h>
 #include "squeek.hpp"
 
+#undef _
+#define _(a) dgettext(GETTEXT_PACKAGE,a)
+
 extern "C" {
 #include "lxutils.h"
 
@@ -11,7 +14,8 @@ extern "C" {
         {CONF_NONE, NULL,       NULL}
     };
     const conf_table_t *config_params (void) { return conf_table; };
-    const char *display_name (void) { textdomain (GETTEXT_PACKAGE); return _("Squeekboard"); }
+    const char *display_name (void) { return N_("Squeekboard"); }
+    const char *package_name (void) { return GETTEXT_PACKAGE; };
 }
 
 GDBusProxy *proxy;
@@ -74,13 +78,9 @@ static void sb_cb_name_unowned (GDBusConnection *, const gchar *name, gpointer u
 
 void WayfireSqueek::init (Gtk::HBox *container)
 {
-    setlocale (LC_ALL, "");
-    bindtextdomain (GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR);
-    bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
-    textdomain (GETTEXT_PACKAGE);
-
     /* Create the button */
     plugin = std::make_unique <Gtk::Button> ();
+    plugin->set_name (PLUGIN_NAME);
     container->pack_start (*plugin, false, false);
 
     /* Create the icon */
