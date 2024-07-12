@@ -1,5 +1,4 @@
 #include <glibmm.h>
-#include "lxutils.h"
 #include "squeek.hpp"
 
 extern "C" {
