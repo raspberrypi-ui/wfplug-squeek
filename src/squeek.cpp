@@ -1,9 +1,6 @@
 #include <glibmm.h>
 #include "squeek.hpp"
 
-#undef _
-#define _(a) dgettext(GETTEXT_PACKAGE,a)
-
 extern "C" {
 #include "lxutils.h"
 
@@ -57,22 +54,20 @@ void WayfireSqueek::on_button_press_event (void)
     if (err) printf ("%s\n", err->message);
 }
 
-/* Callback for BlueZ appearing on D-Bus */
+/* Callback for Squeekboard appearing on D-Bus */
 
 static void sb_cb_name_owned (GDBusConnection *conn, const gchar *name, const gchar *, gpointer user_data)
 {
-    printf ("Name %s owned on D-Bus\n", name);
     GError *err = NULL;
     proxy = g_dbus_proxy_new_sync (conn, G_DBUS_PROXY_FLAGS_NONE, NULL, name, "/sm/puri/OSK0", "sm.puri.OSK0", NULL, &err);
     if (err) printf ("%s\n", err->message);
     gtk_widget_show_all (GTK_WIDGET (user_data));
 }
 
-/* Callback for BlueZ disappearing on D-Bus */
+/* Callback for Squeekboard disappearing on D-Bus */
 
 static void sb_cb_name_unowned (GDBusConnection *, const gchar *name, gpointer user_data)
 {
-    printf ("Name %s unowned on D-Bus\n", name);
     gtk_widget_hide (GTK_WIDGET (user_data));
 }
 
@@ -87,7 +82,9 @@ void WayfireSqueek::init (Gtk::HBox *container)
     icon = std::make_unique <Gtk::Image> ();
     plugin->add (*icon.get());
     plugin->signal_clicked().connect (sigc::mem_fun (*this, &WayfireSqueek::on_button_press_event));
+    textdomain (GETTEXT_PACKAGE);
     plugin->set_tooltip_text (_("Click to show or hide the virtual keyboard"));
+    revert_textdomain ();
 
     /* Setup structure */
     icon_timer = Glib::signal_idle().connect (sigc::mem_fun (*this, &WayfireSqueek::set_icon));
