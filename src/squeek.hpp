@@ -21,7 +21,6 @@ class WayfireSqueek : public WayfireWidget
     void icon_size_changed_cb (void);
     bool set_icon (void);
     void on_button_press_event (void);
-    void do_menu (void);
 };
 
 #endif /* end of include guard: WIDGETS_SQUEEK_HPP */
