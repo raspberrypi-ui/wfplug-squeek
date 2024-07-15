@@ -15,6 +15,9 @@ extern "C" {
     const char *package_name (void) { return GETTEXT_PACKAGE; };
 }
 
+#undef _
+#define _(a) dgettext(GETTEXT_PACKAGE,a)
+
 GDBusProxy *proxy;
 
 void WayfireSqueek::icon_size_changed_cb (void)
@@ -82,9 +85,7 @@ void WayfireSqueek::init (Gtk::HBox *container)
     icon = std::make_unique <Gtk::Image> ();
     plugin->add (*icon.get());
     plugin->signal_clicked().connect (sigc::mem_fun (*this, &WayfireSqueek::on_button_press_event));
-    textdomain (GETTEXT_PACKAGE);
     plugin->set_tooltip_text (_("Click to show or hide the virtual keyboard"));
-    revert_textdomain ();
 
     /* Setup structure */
     icon_timer = Glib::signal_idle().connect (sigc::mem_fun (*this, &WayfireSqueek::set_icon));
