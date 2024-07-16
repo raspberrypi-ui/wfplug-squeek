@@ -3,7 +3,7 @@ Section: unknown
 Priority: optional
 Maintainer: Simon Long <simon@raspberrypi.com>
 Build-Depends: debhelper-compat (= 13), meson, wayland-protocols,
- libgtkmm-3.0-dev (>= 3.24), libglib2.0-dev (>= 2.74.0),
+ libgtkmm-3.0-dev (>= 3.24), libglib2.0-dev (>= 2.74.0), libglm-dev,
  libwlroots-dev | libwlroots12-dev, wf-panel-pi-dev, 
 Standards-Version: 4.5.1
 Homepage: http://raspberrypi.com/
