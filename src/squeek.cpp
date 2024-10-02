@@ -47,6 +47,12 @@ void WayfireSqueek::on_button_press_event (void)
     GVariant *val;
     gboolean res;
 
+    if (pressed == PRESS_LONG)
+    {
+        pressed = PRESS_NONE;
+        return;
+    }
+
     val = g_dbus_proxy_get_cached_property (proxy, "Visible");
     g_variant_get (val, "b", &res);
     g_variant_unref (val);
@@ -55,6 +61,19 @@ void WayfireSqueek::on_button_press_event (void)
     g_dbus_proxy_call_sync (proxy, "SetVisible", val, G_DBUS_CALL_FLAGS_NONE, -1, NULL, &err);
     g_variant_unref (val);
     if (err) printf ("%s\n", err->message);
+    pressed = PRESS_NONE;
+}
+
+void WayfireSqueek::on_gesture_pressed (double x, double y)
+{
+    pressed = PRESS_LONG;
+    press_x = x;
+    press_y = y;
+}
+
+void WayfireSqueek::on_gesture_end (GdkEventSequence *)
+{
+    if (pressed == PRESS_LONG) pass_right_click (GTK_WIDGET (plugin->gobj()), press_x, press_y);
 }
 
 /* Callback for Squeekboard appearing on D-Bus */
@@ -86,6 +105,12 @@ void WayfireSqueek::init (Gtk::HBox *container)
     plugin->add (*icon.get());
     plugin->signal_clicked().connect (sigc::mem_fun (*this, &WayfireSqueek::on_button_press_event));
     plugin->set_tooltip_text (_("Click to show or hide the virtual keyboard"));
+
+    gesture = Gtk::GestureLongPress::create(*plugin);
+    gesture->set_propagation_phase(Gtk::PHASE_BUBBLE);
+    gesture->signal_pressed().connect(sigc::mem_fun(this, &WayfireSqueek::on_gesture_pressed));
+    gesture->signal_end().connect(sigc::mem_fun(this, &WayfireSqueek::on_gesture_end));
+    gesture->set_touch_only(true);
 
     /* Setup structure */
     icon_timer = Glib::signal_idle().connect (sigc::mem_fun (*this, &WayfireSqueek::set_icon));
