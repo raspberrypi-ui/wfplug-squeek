@@ -1,3 +1,9 @@
+wfplug-squeek (0.2) bookworm; urgency=medium
+
+  * Add long press gesture for touchscreens
+
+ -- Simon Long <simon@raspberrypi.com>  Mon, 14 Oct 2024 11:25:38 +0100
+
 wfplug-squeek (0.1) bookworm; urgency=medium
 
   * Initial release.
