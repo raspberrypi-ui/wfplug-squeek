@@ -1,3 +1,9 @@
+wfplug-squeek (0.3) bookworm; urgency=medium
+
+  * Add dependency on specific version of wf-panel-pi
+
+ -- Simon Long <simon@raspberrypi.com>  Wed, 16 Oct 2024 07:16:40 +0100
+
 wfplug-squeek (0.2) bookworm; urgency=medium
 
   * Add long press gesture for touchscreens
