@@ -1,3 +1,9 @@
+wfplug-squeek (0.4) bookworm; urgency=medium
+
+  * Correct dependency version 
+
+ -- Simon Long <simon@raspberrypi.com>  Wed, 16 Oct 2024 12:41:46 +0100
+
 wfplug-squeek (0.3) bookworm; urgency=medium
 
   * Add dependency on specific version of wf-panel-pi
