@@ -110,7 +110,7 @@ void WayfireSqueek::init (Gtk::HBox *container)
     gesture->set_propagation_phase(Gtk::PHASE_BUBBLE);
     gesture->signal_pressed().connect(sigc::mem_fun(this, &WayfireSqueek::on_gesture_pressed));
     gesture->signal_end().connect(sigc::mem_fun(this, &WayfireSqueek::on_gesture_end));
-    gesture->set_touch_only(true);
+    gesture->set_touch_only(touch_only);
 
     /* Setup structure */
     icon_timer = Glib::signal_idle().connect (sigc::mem_fun (*this, &WayfireSqueek::set_icon));

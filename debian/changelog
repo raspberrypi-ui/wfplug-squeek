@@ -1,3 +1,9 @@
+wfplug-squeek (0.5) bookworm; urgency=medium
+
+  * Use global touch-only option for gesture
+
+ -- Simon Long <simon@raspberrypi.com>  Thu, 17 Oct 2024 14:14:34 +0100
+
 wfplug-squeek (0.4) bookworm; urgency=medium
 
   * Correct dependency version 
