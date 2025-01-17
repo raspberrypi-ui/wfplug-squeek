@@ -1,3 +1,30 @@
+/*============================================================================
+Copyright (c) 2024 Raspberry Pi Holdings Ltd.
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+    * Neither the name of the copyright holder nor the
+      names of its contributors may be used to endorse or promote products
+      derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY
+DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+============================================================================*/
+
 #include <glibmm.h>
 #include "squeek.hpp"
 
@@ -14,9 +41,6 @@ extern "C" {
     const char *display_name (void) { return N_("Squeekboard"); }
     const char *package_name (void) { return GETTEXT_PACKAGE; };
 }
-
-#undef _
-#define _(a) dgettext(GETTEXT_PACKAGE,a)
 
 GDBusProxy *proxy;
 
@@ -47,12 +71,7 @@ void WayfireSqueek::on_button_press_event (void)
     GVariant *val;
     gboolean res;
 
-    if (pressed == PRESS_LONG)
-    {
-        pressed = PRESS_NONE;
-        return;
-    }
-
+    CHECK_LONGPRESS
     val = g_dbus_proxy_get_cached_property (proxy, "Visible");
     g_variant_get (val, "b", &res);
     g_variant_unref (val);
@@ -61,19 +80,6 @@ void WayfireSqueek::on_button_press_event (void)
     g_dbus_proxy_call_sync (proxy, "SetVisible", val, G_DBUS_CALL_FLAGS_NONE, -1, NULL, &err);
     g_variant_unref (val);
     if (err) printf ("%s\n", err->message);
-    pressed = PRESS_NONE;
-}
-
-void WayfireSqueek::on_gesture_pressed (double x, double y)
-{
-    pressed = PRESS_LONG;
-    press_x = x;
-    press_y = y;
-}
-
-void WayfireSqueek::on_gesture_end (GdkEventSequence *)
-{
-    if (pressed == PRESS_LONG) pass_right_click (GTK_WIDGET (plugin->gobj()), press_x, press_y);
 }
 
 /* Callback for Squeekboard appearing on D-Bus */
@@ -88,7 +94,7 @@ static void sb_cb_name_owned (GDBusConnection *conn, const gchar *name, const gc
 
 /* Callback for Squeekboard disappearing on D-Bus */
 
-static void sb_cb_name_unowned (GDBusConnection *, const gchar *name, gpointer user_data)
+static void sb_cb_name_unowned (GDBusConnection *, const gchar *, gpointer user_data)
 {
     gtk_widget_hide (GTK_WIDGET (user_data));
 }
@@ -106,11 +112,8 @@ void WayfireSqueek::init (Gtk::HBox *container)
     plugin->signal_clicked().connect (sigc::mem_fun (*this, &WayfireSqueek::on_button_press_event));
     plugin->set_tooltip_text (_("Click to show or hide the virtual keyboard"));
 
-    gesture = Gtk::GestureLongPress::create(*plugin);
-    gesture->set_propagation_phase(Gtk::PHASE_BUBBLE);
-    gesture->signal_pressed().connect(sigc::mem_fun(this, &WayfireSqueek::on_gesture_pressed));
-    gesture->signal_end().connect(sigc::mem_fun(this, &WayfireSqueek::on_gesture_end));
-    gesture->set_touch_only(touch_only);
+    GtkGestureLongPress *ggest = (GtkGestureLongPress *) add_long_press (GTK_WIDGET (plugin->gobj()), NULL, NULL);
+    gesture = Glib::wrap (ggest);
 
     /* Setup structure */
     icon_timer = Glib::signal_idle().connect (sigc::mem_fun (*this, &WayfireSqueek::set_icon));
@@ -126,3 +129,6 @@ WayfireSqueek::~WayfireSqueek()
 {
     icon_timer.disconnect ();
 }
+
+/* End of file */
+/*----------------------------------------------------------------------------*/
