@@ -26,6 +26,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ============================================================================*/
 
 #include <glibmm.h>
+#include "gtk-utils.hpp"
+
 #include "squeek.hpp"
 
 extern "C" {
@@ -112,8 +114,7 @@ void WayfireSqueek::init (Gtk::HBox *container)
     plugin->signal_clicked().connect (sigc::mem_fun (*this, &WayfireSqueek::on_button_press_event));
     plugin->set_tooltip_text (_("Click to show or hide the virtual keyboard"));
 
-    GtkGestureLongPress *ggest = (GtkGestureLongPress *) add_long_press (GTK_WIDGET (plugin->gobj()), NULL, NULL);
-    gesture = Glib::wrap (ggest);
+    gesture = add_longpress_default (*plugin);
 
     /* Setup structure */
     icon_timer = Glib::signal_idle().connect (sigc::mem_fun (*this, &WayfireSqueek::set_icon));
