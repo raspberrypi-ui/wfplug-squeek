@@ -1,3 +1,9 @@
+wfplug-squeek (0.6) bookworm; urgency=medium
+
+  * Changes to harmonise source with hybrid plugins
+
+ -- Simon Long <simon@raspberrypi.com>  Thu, 23 Jan 2025 15:39:57 +0000
+
 wfplug-squeek (0.5) bookworm; urgency=medium
 
   * Use global touch-only option for gesture
