@@ -1,5 +1,5 @@
 /*============================================================================
-Copyright (c) 2024 Raspberry Pi Holdings Ltd.
+Copyright (c) 2024 Raspberry Pi
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -27,17 +27,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <glibmm.h>
 #include "gtk-utils.hpp"
-
 #include "squeek.hpp"
 
 extern "C" {
-#include "lxutils.h"
-
     WayfireWidget *create () { return new WayfireSqueek; }
     void destroy (WayfireWidget *w) { delete w; }
 
     static constexpr conf_table_t conf_table[1] = {
-        {CONF_NONE, NULL,       NULL}
+        {CONF_NONE, NULL, NULL}
     };
     const conf_table_t *config_params (void) { return conf_table; };
     const char *display_name (void) { return N_("Squeekboard"); }
@@ -114,10 +111,11 @@ void WayfireSqueek::init (Gtk::HBox *container)
     plugin->signal_clicked().connect (sigc::mem_fun (*this, &WayfireSqueek::on_button_press_event));
     plugin->set_tooltip_text (_("Click to show or hide the virtual keyboard"));
 
-    gesture = add_longpress_default (*plugin);
-
     /* Setup structure */
     icon_timer = Glib::signal_idle().connect (sigc::mem_fun (*this, &WayfireSqueek::set_icon));
+
+    /* Add long press for right click */
+    gesture = add_longpress_default (*plugin);
 
     /* Setup callbacks */
     icon_size.set_callback (sigc::mem_fun (*this, &WayfireSqueek::icon_size_changed_cb));

@@ -1,5 +1,5 @@
 /*============================================================================
-Copyright (c) 2024 Raspberry Pi Holdings Ltd.
+Copyright (c) 2024 Raspberry Pi
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -28,10 +28,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef WIDGETS_SQUEEK_HPP
 #define WIDGETS_SQUEEK_HPP
 
-#include "widget.hpp"
+#include <widget.hpp>
 #include <gtkmm/button.h>
 #include <gtkmm/image.h>
 #include <gtkmm/gesturelongpress.h>
+
+extern "C" {
+#include "lxutils.h"
+}
 
 class WayfireSqueek : public WayfireWidget
 {
