@@ -43,15 +43,12 @@ class WayfireSqueek : public WayfireWidget
     std::unique_ptr <Gtk::Image> icon;
     Glib::RefPtr<Gtk::GestureLongPress> gesture;
 
-    WfOption <int> icon_size {"panel/icon_size"};
-    WfOption <std::string> bar_pos {"panel/position"};
     sigc::connection icon_timer;
 
   public:
 
     void init (Gtk::HBox *container) override;
     virtual ~WayfireSqueek ();
-    void icon_size_changed_cb (void);
     bool set_icon (void);
     void on_button_press_event (void);
 };

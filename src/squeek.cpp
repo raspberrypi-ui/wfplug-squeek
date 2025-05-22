@@ -34,7 +34,7 @@ extern "C" {
     void destroy (WayfireWidget *w) { delete w; }
 
     static constexpr conf_table_t conf_table[1] = {
-        {CONF_NONE, NULL, NULL}
+        {CONF_TYPE_NONE, NULL, NULL, NULL}
     };
     const conf_table_t *config_params (void) { return conf_table; };
     const char *display_name (void) { return N_("Squeekboard"); }
@@ -43,9 +43,9 @@ extern "C" {
 
 GDBusProxy *proxy;
 
-void WayfireSqueek::icon_size_changed_cb (void)
+bool WayfireSqueek::set_icon (void)
 {
-    switch (icon_size)
+    switch (get_icon_size ())
     {
         case 16 :   icon->set_from_icon_name ("input-keyboard", Gtk::ICON_SIZE_SMALL_TOOLBAR);
                     break;
@@ -56,11 +56,6 @@ void WayfireSqueek::icon_size_changed_cb (void)
         case 48 :   icon->set_from_icon_name ("input-keyboard", Gtk::ICON_SIZE_DIALOG);
                     break;
     }
-}
-
-bool WayfireSqueek::set_icon (void)
-{
-    icon_size_changed_cb ();
     return false;
 }
 
@@ -116,9 +111,6 @@ void WayfireSqueek::init (Gtk::HBox *container)
 
     /* Add long press for right click */
     gesture = add_longpress_default (*plugin);
-
-    /* Setup callbacks */
-    icon_size.set_callback (sigc::mem_fun (*this, &WayfireSqueek::icon_size_changed_cb));
 
     /* Set up callbacks to see if squeekboard is on D-Bus */
     g_bus_watch_name (G_BUS_TYPE_SESSION, "sm.puri.OSK0", G_BUS_NAME_WATCHER_FLAGS_NONE, sb_cb_name_owned, sb_cb_name_unowned, (*plugin).gobj(), NULL);
