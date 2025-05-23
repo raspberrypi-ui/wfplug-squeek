@@ -37,7 +37,7 @@ extern "C" {
         {CONF_TYPE_NONE, NULL, NULL, NULL}
     };
     const conf_table_t *config_params (void) { return conf_table; };
-    const char *display_name (void) { return N_("Squeekboard"); }
+    const char *display_name (void) { return PLUGIN_TITLE; }
     const char *package_name (void) { return GETTEXT_PACKAGE; };
 }
 
@@ -47,13 +47,13 @@ bool WayfireSqueek::set_icon (void)
 {
     switch (get_icon_size ())
     {
-        case 16 :   icon->set_from_icon_name ("input-keyboard", Gtk::ICON_SIZE_SMALL_TOOLBAR);
+        case 16 :   icon->set_from_icon_name ("keyboard-plugin", Gtk::ICON_SIZE_SMALL_TOOLBAR);
                     break;
-        case 24 :   icon->set_from_icon_name ("input-keyboard", Gtk::ICON_SIZE_LARGE_TOOLBAR);
+        case 24 :   icon->set_from_icon_name ("keyboard-plugin", Gtk::ICON_SIZE_LARGE_TOOLBAR);
                     break;
-        case 32 :   icon->set_from_icon_name ("input-keyboard", Gtk::ICON_SIZE_DND);
+        case 32 :   icon->set_from_icon_name ("keyboard-plugin", Gtk::ICON_SIZE_DND);
                     break;
-        case 48 :   icon->set_from_icon_name ("input-keyboard", Gtk::ICON_SIZE_DIALOG);
+        case 48 :   icon->set_from_icon_name ("keyboard-plugin", Gtk::ICON_SIZE_DIALOG);
                     break;
     }
     return false;

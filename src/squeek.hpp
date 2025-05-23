@@ -37,6 +37,8 @@ extern "C" {
 #include "lxutils.h"
 }
 
+#define PLUGIN_TITLE N_("Squeekboard")
+
 class WayfireSqueek : public WayfireWidget
 {
     std::unique_ptr <Gtk::Button> plugin;
