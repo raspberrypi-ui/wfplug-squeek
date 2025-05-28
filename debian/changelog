@@ -1,3 +1,9 @@
+wfplug-squeek (0.7) trixie; urgency=medium
+
+  * Further harmonisation with hybrids
+
+ -- Simon Long <simon@raspberrypi.com>  Wed, 28 May 2025 18:43:05 +0100
+
 wfplug-squeek (0.6) bookworm; urgency=medium
 
   * Changes to harmonise source with hybrid plugins
