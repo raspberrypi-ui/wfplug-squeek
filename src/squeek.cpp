@@ -47,13 +47,13 @@ bool WayfireSqueek::set_icon (void)
 {
     switch (get_icon_size ())
     {
-        case 16 :   icon->set_from_icon_name ("keyboard-plugin", Gtk::ICON_SIZE_SMALL_TOOLBAR);
+        case 16 :   icon->set_from_icon_name ("squeekboard", Gtk::ICON_SIZE_SMALL_TOOLBAR);
                     break;
-        case 24 :   icon->set_from_icon_name ("keyboard-plugin", Gtk::ICON_SIZE_LARGE_TOOLBAR);
+        case 24 :   icon->set_from_icon_name ("squeekboard", Gtk::ICON_SIZE_LARGE_TOOLBAR);
                     break;
-        case 32 :   icon->set_from_icon_name ("keyboard-plugin", Gtk::ICON_SIZE_DND);
+        case 32 :   icon->set_from_icon_name ("squeekboard", Gtk::ICON_SIZE_DND);
                     break;
-        case 48 :   icon->set_from_icon_name ("keyboard-plugin", Gtk::ICON_SIZE_DIALOG);
+        case 48 :   icon->set_from_icon_name ("squeekboard", Gtk::ICON_SIZE_DIALOG);
                     break;
     }
     return false;
