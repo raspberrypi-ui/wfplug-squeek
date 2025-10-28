@@ -45,17 +45,7 @@ GDBusProxy *proxy;
 
 bool WayfireSqueek::set_icon (void)
 {
-    int scale = icon->get_scale_factor ();
-    GdkPixbuf *pixbuf = gtk_icon_theme_load_icon_for_scale (gtk_icon_theme_get_default (), "squeekboard",
-            get_icon_size (), scale, GTK_ICON_LOOKUP_FORCE_SIZE, NULL);
-    if (scale == 1) gtk_image_set_from_pixbuf (icon->gobj(), pixbuf);
-    else
-    {
-        cairo_surface_t *cr = gdk_cairo_surface_create_from_pixbuf (pixbuf, scale, NULL);
-        gtk_image_set_from_surface (icon->gobj(), cr);
-        cairo_surface_destroy (cr);
-    }
-    g_object_unref (pixbuf);
+    set_taskbar_icon (GTK_WIDGET (icon->gobj ()), "squeekboard", get_icon_size ());
     return false;
 }
 
