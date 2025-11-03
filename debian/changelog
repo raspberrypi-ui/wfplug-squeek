@@ -1,3 +1,9 @@
+wfplug-squeek (1.1) trixie; urgency=medium
+
+  * Add larger icons
+
+ -- Simon Long <simon@raspberrypi.com>  Mon, 03 Nov 2025 12:57:45 +0000
+
 wfplug-squeek (1.0) trixie; urgency=medium
 
   * Further harmonisation with hybrids
