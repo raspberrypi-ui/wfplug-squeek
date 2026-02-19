@@ -45,7 +45,7 @@ GDBusProxy *proxy;
 
 bool WayfireSqueek::set_icon (void)
 {
-    set_taskbar_icon (GTK_WIDGET (icon->gobj ()), "squeekboard", get_icon_size ());
+    set_taskbar_icon (GTK_WIDGET (icon->gobj ()), "squeekboard");
     return false;
 }
 
