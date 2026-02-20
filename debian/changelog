@@ -1,3 +1,9 @@
+wfplug-squeek (1.2) trixie; urgency=medium
+
+  * Update arguments to icon load function; rebuild against latest APIs
+
+ -- Simon Long <simon@raspberrypi.com>  Fri, 20 Feb 2026 10:14:36 +0000
+
 wfplug-squeek (1.1) trixie; urgency=medium
 
   * Add larger icons
