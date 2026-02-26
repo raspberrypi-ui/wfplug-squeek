@@ -43,6 +43,10 @@ extern "C" {
 
 GDBusProxy *proxy;
 
+static struct udev         *udev_ctx;
+static struct udev_monitor *udev_mon;
+static int                  kbd_count;
+
 bool WayfireSqueek::set_icon (void)
 {
     set_taskbar_icon (GTK_WIDGET (icon->gobj ()), "squeekboard");
@@ -66,6 +70,48 @@ void WayfireSqueek::on_button_press_event (void)
     if (err) printf ("%s\n", err->message);
 }
 
+/* Set squeekboard visibility based on physical keyboard presence */
+
+static void update_keyboard_visibility (void)
+{
+    GError *err = NULL;
+    GVariant *val;
+
+    if (!proxy) return;
+
+    val = g_variant_new ("(b)", kbd_count == 0);
+    g_dbus_proxy_call_sync (proxy, "SetVisible", val, G_DBUS_CALL_FLAGS_NONE, -1, NULL, &err);
+    g_variant_unref (val);
+    if (err) printf ("%s\n", err->message);
+}
+
+/* udev monitor callback - called by GLib main loop when udev socket is readable */
+
+static gboolean udev_cb (GIOChannel *, GIOCondition, gpointer)
+{
+    struct udev_device *dev = udev_monitor_receive_device (udev_mon);
+    if (!dev) return TRUE;
+
+    const char *kbd = udev_device_get_property_value (dev, "ID_INPUT_KEYBOARD");
+    if (kbd && strcmp (kbd, "1") == 0)
+    {
+        const char *action = udev_device_get_action (dev);
+        if (action && strcmp (action, "add") == 0)
+        {
+            kbd_count++;
+            update_keyboard_visibility ();
+        }
+        else if (action && strcmp (action, "remove") == 0)
+        {
+            if (kbd_count > 0) kbd_count--;
+            update_keyboard_visibility ();
+        }
+    }
+
+    udev_device_unref (dev);
+    return TRUE;
+}
+
 /* Callback for Squeekboard appearing on D-Bus */
 
 static void sb_cb_name_owned (GDBusConnection *conn, const gchar *name, const gchar *, gpointer user_data)
@@ -74,6 +120,7 @@ static void sb_cb_name_owned (GDBusConnection *conn, const gchar *name, const gc
     proxy = g_dbus_proxy_new_sync (conn, G_DBUS_PROXY_FLAGS_NONE, NULL, name, "/sm/puri/OSK0", "sm.puri.OSK0", NULL, &err);
     if (err) printf ("%s\n", err->message);
     gtk_widget_show_all (GTK_WIDGET (user_data));
+    update_keyboard_visibility ();
 }
 
 /* Callback for Squeekboard disappearing on D-Bus */
@@ -104,11 +151,44 @@ void WayfireSqueek::init (Gtk::HBox *container)
 
     /* Set up callbacks to see if squeekboard is on D-Bus */
     g_bus_watch_name (G_BUS_TYPE_SESSION, "sm.puri.OSK0", G_BUS_NAME_WATCHER_FLAGS_NONE, sb_cb_name_owned, sb_cb_name_unowned, (*plugin).gobj(), NULL);
+
+    /* Set up udev monitor to detect physical keyboard plug/unplug */
+    udev_ctx = udev_new ();
+    if (udev_ctx)
+    {
+        udev_mon = udev_monitor_new_from_netlink (udev_ctx, "udev");
+        udev_monitor_filter_add_match_subsystem_devtype (udev_mon, "input", NULL);
+        udev_monitor_enable_receiving (udev_mon);
+
+        GIOChannel *chan = g_io_channel_unix_new (udev_monitor_get_fd (udev_mon));
+        udev_watch = g_io_add_watch (chan, G_IO_IN, udev_cb, NULL);
+        g_io_channel_unref (chan);
+
+        /* Count keyboards already present at startup */
+        struct udev_enumerate *en = udev_enumerate_new (udev_ctx);
+        udev_enumerate_add_match_property (en, "ID_INPUT_KEYBOARD", "1");
+        udev_enumerate_scan_devices (en);
+        struct udev_list_entry *entry, *devices = udev_enumerate_get_list_entry (en);
+        udev_list_entry_foreach (entry, devices)
+        {
+            struct udev_device *dev = udev_device_new_from_syspath (udev_ctx,
+                udev_list_entry_get_name (entry));
+            if (dev)
+            {
+                if (udev_device_get_devnode (dev)) kbd_count++;
+                udev_device_unref (dev);
+            }
+        }
+        udev_enumerate_unref (en);
+    }
 }
 
 WayfireSqueek::~WayfireSqueek()
 {
     icon_timer.disconnect ();
+    if (udev_watch) g_source_remove (udev_watch);
+    if (udev_mon) udev_monitor_unref (udev_mon);
+    if (udev_ctx) udev_unref (udev_ctx);
 }
 
 /* End of file */
