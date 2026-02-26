@@ -85,6 +85,29 @@ static void update_keyboard_visibility (void)
     if (err) printf ("%s\n", err->message);
 }
 
+/* Count physical keyboards currently present */
+
+static int count_keyboards (void)
+{
+    int count = 0;
+    struct udev_enumerate *en = udev_enumerate_new (udev_ctx);
+    udev_enumerate_add_match_property (en, "ID_INPUT_KEYBOARD", "1");
+    udev_enumerate_scan_devices (en);
+    struct udev_list_entry *entry, *devices = udev_enumerate_get_list_entry (en);
+    udev_list_entry_foreach (entry, devices)
+    {
+        struct udev_device *dev = udev_device_new_from_syspath (udev_ctx,
+            udev_list_entry_get_name (entry));
+        if (dev)
+        {
+            if (udev_device_get_devnode (dev)) count++;
+            udev_device_unref (dev);
+        }
+    }
+    udev_enumerate_unref (en);
+    return count;
+}
+
 /* udev monitor callback - called by GLib main loop when udev socket is readable */
 
 static gboolean udev_cb (GIOChannel *, GIOCondition, gpointer)
@@ -92,20 +115,19 @@ static gboolean udev_cb (GIOChannel *, GIOCondition, gpointer)
     struct udev_device *dev = udev_monitor_receive_device (udev_mon);
     if (!dev) return TRUE;
 
+    const char *action = udev_device_get_action (dev);
     const char *kbd = udev_device_get_property_value (dev, "ID_INPUT_KEYBOARD");
-    if (kbd && strcmp (kbd, "1") == 0)
+
+    if (action && strcmp (action, "add") == 0 && kbd && strcmp (kbd, "1") == 0)
     {
-        const char *action = udev_device_get_action (dev);
-        if (action && strcmp (action, "add") == 0)
-        {
-            kbd_count++;
-            update_keyboard_visibility ();
-        }
-        else if (action && strcmp (action, "remove") == 0)
-        {
-            if (kbd_count > 0) kbd_count--;
-            update_keyboard_visibility ();
-        }
+        kbd_count++;
+        update_keyboard_visibility ();
+    }
+    else if (action && strcmp (action, "remove") == 0)
+    {
+        /* Re-enumerate on removal as properties may be absent in remove events */
+        kbd_count = count_keyboards ();
+        update_keyboard_visibility ();
     }
 
     udev_device_unref (dev);
@@ -165,21 +187,7 @@ void WayfireSqueek::init (Gtk::HBox *container)
         g_io_channel_unref (chan);
 
         /* Count keyboards already present at startup */
-        struct udev_enumerate *en = udev_enumerate_new (udev_ctx);
-        udev_enumerate_add_match_property (en, "ID_INPUT_KEYBOARD", "1");
-        udev_enumerate_scan_devices (en);
-        struct udev_list_entry *entry, *devices = udev_enumerate_get_list_entry (en);
-        udev_list_entry_foreach (entry, devices)
-        {
-            struct udev_device *dev = udev_device_new_from_syspath (udev_ctx,
-                udev_list_entry_get_name (entry));
-            if (dev)
-            {
-                if (udev_device_get_devnode (dev)) kbd_count++;
-                udev_device_unref (dev);
-            }
-        }
-        udev_enumerate_unref (en);
+        kbd_count = count_keyboards ();
     }
 }
 
