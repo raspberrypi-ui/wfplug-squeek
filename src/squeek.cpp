@@ -46,6 +46,7 @@ GDBusProxy *proxy;
 static struct udev         *udev_ctx;
 static struct udev_monitor *udev_mon;
 static int                  kbd_count;
+static GtkWidget           *panel_button;
 
 bool WayfireSqueek::set_icon (void)
 {
@@ -83,6 +84,12 @@ static void update_keyboard_visibility (void)
     g_dbus_proxy_call_sync (proxy, "SetVisible", val, G_DBUS_CALL_FLAGS_NONE, -1, NULL, &err);
     g_variant_unref (val);
     if (err) printf ("%s\n", err->message);
+
+    if (panel_button)
+    {
+        if (kbd_count == 0) gtk_widget_show (panel_button);
+        else gtk_widget_hide (panel_button);
+    }
 }
 
 /* Return TRUE if device is a real keyboard (not a mouse, touchscreen, etc.) */
@@ -174,6 +181,7 @@ static void sb_cb_name_owned (GDBusConnection *conn, const gchar *name, const gc
     proxy = g_dbus_proxy_new_sync (conn, G_DBUS_PROXY_FLAGS_NONE, NULL, name, "/sm/puri/OSK0", "sm.puri.OSK0", NULL, &err);
     if (err) printf ("%s\n", err->message);
     g_signal_connect (proxy, "g-properties-changed", G_CALLBACK (proxy_properties_changed), NULL);
+    panel_button = GTK_WIDGET (user_data);
     gtk_widget_show_all (GTK_WIDGET (user_data));
     update_keyboard_visibility ();
 }
