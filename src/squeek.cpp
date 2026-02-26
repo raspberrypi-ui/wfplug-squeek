@@ -154,6 +154,18 @@ static gboolean udev_cb (GIOChannel *, GIOCondition, gpointer)
     return TRUE;
 }
 
+/* Callback for Squeekboard D-Bus property changes - suppress auto-show when physical keyboard present */
+
+static void proxy_properties_changed (GDBusProxy *, GVariant *changed, const gchar *const *, gpointer)
+{
+    GVariant *vis = g_variant_lookup_value (changed, "Visible", G_VARIANT_TYPE_BOOLEAN);
+    if (!vis) return;
+    gboolean val;
+    g_variant_get (vis, "b", &val);
+    g_variant_unref (vis);
+    if (val && kbd_count > 0) update_keyboard_visibility ();
+}
+
 /* Callback for Squeekboard appearing on D-Bus */
 
 static void sb_cb_name_owned (GDBusConnection *conn, const gchar *name, const gchar *, gpointer user_data)
@@ -161,6 +173,7 @@ static void sb_cb_name_owned (GDBusConnection *conn, const gchar *name, const gc
     GError *err = NULL;
     proxy = g_dbus_proxy_new_sync (conn, G_DBUS_PROXY_FLAGS_NONE, NULL, name, "/sm/puri/OSK0", "sm.puri.OSK0", NULL, &err);
     if (err) printf ("%s\n", err->message);
+    g_signal_connect (proxy, "g-properties-changed", G_CALLBACK (proxy_properties_changed), NULL);
     gtk_widget_show_all (GTK_WIDGET (user_data));
     update_keyboard_visibility ();
 }
