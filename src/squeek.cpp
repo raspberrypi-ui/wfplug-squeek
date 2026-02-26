@@ -85,6 +85,27 @@ static void update_keyboard_visibility (void)
     if (err) printf ("%s\n", err->message);
 }
 
+/* Return TRUE if device is a real keyboard (not a mouse, touchscreen, etc.) */
+
+static gboolean is_keyboard (struct udev_device *dev)
+{
+    const char *val;
+
+    val = udev_device_get_property_value (dev, "ID_INPUT_KEYBOARD");
+    if (!val || strcmp (val, "1") != 0) return FALSE;
+
+    /* Exclude devices that are primarily something other than a keyboard */
+    const char *excl[] = { "ID_INPUT_MOUSE", "ID_INPUT_TOUCHSCREEN",
+                           "ID_INPUT_TABLET", "ID_INPUT_JOYSTICK", NULL };
+    for (int i = 0; excl[i]; i++)
+    {
+        val = udev_device_get_property_value (dev, excl[i]);
+        if (val && strcmp (val, "1") == 0) return FALSE;
+    }
+
+    return TRUE;
+}
+
 /* Count physical keyboards currently present */
 
 static int count_keyboards (void)
@@ -100,7 +121,7 @@ static int count_keyboards (void)
             udev_list_entry_get_name (entry));
         if (dev)
         {
-            if (udev_device_get_devnode (dev)) count++;
+            if (udev_device_get_devnode (dev) && is_keyboard (dev)) count++;
             udev_device_unref (dev);
         }
     }
@@ -116,9 +137,8 @@ static gboolean udev_cb (GIOChannel *, GIOCondition, gpointer)
     if (!dev) return TRUE;
 
     const char *action = udev_device_get_action (dev);
-    const char *kbd = udev_device_get_property_value (dev, "ID_INPUT_KEYBOARD");
 
-    if (action && strcmp (action, "add") == 0 && kbd && strcmp (kbd, "1") == 0)
+    if (action && strcmp (action, "add") == 0 && is_keyboard (dev))
     {
         kbd_count++;
         update_keyboard_visibility ();
