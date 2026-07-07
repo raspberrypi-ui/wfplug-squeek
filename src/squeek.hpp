@@ -45,6 +45,8 @@ class WayfireSqueek : public WayfireWidget
 
     sigc::connection icon_timer;
 
+    GtkGesture *gesture;
+
   public:
 
     void init (Gtk::HBox *container) override;
