@@ -26,7 +26,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ============================================================================*/
 
 #include <glibmm.h>
-#include "gtk-utils.hpp"
 #include "squeek.hpp"
 
 extern "C" {
@@ -100,7 +99,7 @@ void WayfireSqueek::init (Gtk::HBox *container)
     icon_timer = Glib::signal_idle().connect (sigc::mem_fun (*this, &WayfireSqueek::set_icon));
 
     /* Add long press for right click */
-    gesture = add_longpress_default (*plugin);
+    add_long_press (GTK_WIDGET (plugin->gobj ()), NULL, NULL);
 
     /* Set up callbacks to see if squeekboard is on D-Bus */
     g_bus_watch_name (G_BUS_TYPE_SESSION, "sm.puri.OSK0", G_BUS_NAME_WATCHER_FLAGS_NONE, sb_cb_name_owned, sb_cb_name_unowned, (*plugin).gobj(), NULL);

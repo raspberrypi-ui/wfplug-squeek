@@ -31,7 +31,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <widget.hpp>
 #include <gtkmm/button.h>
 #include <gtkmm/image.h>
-#include <gtkmm/gesturelongpress.h>
 
 extern "C" {
 #include "lxutils.h"
@@ -43,7 +42,6 @@ class WayfireSqueek : public WayfireWidget
 {
     std::unique_ptr <Gtk::Button> plugin;
     std::unique_ptr <Gtk::Image> icon;
-    Glib::RefPtr<Gtk::GestureLongPress> gesture;
 
     sigc::connection icon_timer;
 
