@@ -29,8 +29,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "squeek.hpp"
 
 extern "C" {
-    WayfireWidget *create () { return new WayfireSqueek; }
-    void destroy (WayfireWidget *w) { delete w; }
+    PanelWidget *create () { return new WidgetSqueek; }
+    void destroy (PanelWidget *w) { delete w; }
 
     static constexpr conf_table_t conf_table[1] = {
         {CONF_TYPE_NONE, NULL, NULL, NULL}
@@ -42,13 +42,13 @@ extern "C" {
 
 GDBusProxy *proxy;
 
-bool WayfireSqueek::set_icon (void)
+bool WidgetSqueek::set_icon (void)
 {
     set_taskbar_icon (GTK_WIDGET (icon->gobj ()), "squeekboard");
     return false;
 }
 
-void WayfireSqueek::on_button_press_event (void)
+void WidgetSqueek::on_button_press_event (void)
 {
     GError *err = NULL;
     GVariant *val;
@@ -82,7 +82,7 @@ static void sb_cb_name_unowned (GDBusConnection *, const gchar *, gpointer user_
     gtk_widget_hide (GTK_WIDGET (user_data));
 }
 
-void WayfireSqueek::init (Gtk::HBox *container)
+void WidgetSqueek::init (Gtk::HBox *container)
 {
     /* Create the button */
     plugin = std::make_unique <Gtk::Button> ();
@@ -92,11 +92,11 @@ void WayfireSqueek::init (Gtk::HBox *container)
     /* Create the icon */
     icon = std::make_unique <Gtk::Image> ();
     plugin->add (*icon.get());
-    plugin->signal_clicked().connect (sigc::mem_fun (*this, &WayfireSqueek::on_button_press_event));
+    plugin->signal_clicked().connect (sigc::mem_fun (*this, &WidgetSqueek::on_button_press_event));
     plugin->set_tooltip_text (_("Click to show or hide the virtual keyboard"));
 
     /* Setup structure */
-    icon_timer = Glib::signal_idle().connect (sigc::mem_fun (*this, &WayfireSqueek::set_icon));
+    icon_timer = Glib::signal_idle().connect (sigc::mem_fun (*this, &WidgetSqueek::set_icon));
 
     /* Add long press for right click */
     gesture = add_long_press (GTK_WIDGET (plugin->gobj ()), NULL, NULL);
@@ -105,7 +105,7 @@ void WayfireSqueek::init (Gtk::HBox *container)
     g_bus_watch_name (G_BUS_TYPE_SESSION, "sm.puri.OSK0", G_BUS_NAME_WATCHER_FLAGS_NONE, sb_cb_name_owned, sb_cb_name_unowned, (*plugin).gobj(), NULL);
 }
 
-WayfireSqueek::~WayfireSqueek()
+WidgetSqueek::~WidgetSqueek()
 {
     g_object_unref (gesture);
     icon_timer.disconnect ();

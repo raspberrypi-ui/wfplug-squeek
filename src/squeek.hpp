@@ -38,7 +38,7 @@ extern "C" {
 
 #define PLUGIN_TITLE N_("Squeekboard")
 
-class WayfireSqueek : public WayfireWidget
+class WidgetSqueek : public PanelWidget
 {
     std::unique_ptr <Gtk::Button> plugin;
     std::unique_ptr <Gtk::Image> icon;
@@ -50,7 +50,7 @@ class WayfireSqueek : public WayfireWidget
   public:
 
     void init (Gtk::HBox *container) override;
-    virtual ~WayfireSqueek ();
+    virtual ~WidgetSqueek ();
     bool set_icon (void);
     void on_button_press_event (void);
 };
