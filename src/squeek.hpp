@@ -43,16 +43,20 @@ class WidgetSqueek : public PanelWidget
     std::unique_ptr <Gtk::Button> plugin;
     std::unique_ptr <Gtk::Image> icon;
 
-    sigc::connection icon_timer;
-
     GtkGesture *gesture;
+
+    GDBusProxy *proxy;
+    guint owner_id;
 
   public:
 
-    void init (Gtk::HBox *container) override;
+    void widget_init (Gtk::HBox *container) override;
     virtual ~WidgetSqueek ();
-    bool set_icon (void);
+    void widget_set_icon (void);
     void on_button_press_event (void);
+
+    void sb_cb_name_owned (const Glib::RefPtr<Gio::DBus::Connection>&, const Glib::ustring&, const Glib::ustring&);
+    void sb_cb_name_unowned (const Glib::RefPtr<Gio::DBus::Connection>&, const Glib::ustring&);
 };
 
 #endif /* end of include guard: WIDGETS_SQUEEK_HPP */

@@ -26,6 +26,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ============================================================================*/
 
 #include <glibmm.h>
+#include <giomm/dbuswatchname.h>
+#include <giomm/dbusconnection.h>
 #include "squeek.hpp"
 
 extern "C" {
@@ -38,14 +40,6 @@ extern "C" {
     const conf_table_t *config_params (void) { return conf_table; };
     const char *display_name (void) { return PLUGIN_TITLE; }
     const char *package_name (void) { return GETTEXT_PACKAGE; };
-}
-
-GDBusProxy *proxy;
-
-bool WidgetSqueek::set_icon (void)
-{
-    set_taskbar_icon (GTK_WIDGET (icon->gobj ()), "squeekboard");
-    return false;
 }
 
 void WidgetSqueek::on_button_press_event (void)
@@ -67,22 +61,27 @@ void WidgetSqueek::on_button_press_event (void)
 
 /* Callback for Squeekboard appearing on D-Bus */
 
-static void sb_cb_name_owned (GDBusConnection *conn, const gchar *name, const gchar *, gpointer user_data)
+void WidgetSqueek::sb_cb_name_owned (const Glib::RefPtr<Gio::DBus::Connection>& connection, const Glib::ustring& name, const Glib::ustring&)
 {
     GError *err = NULL;
-    proxy = g_dbus_proxy_new_sync (conn, G_DBUS_PROXY_FLAGS_NONE, NULL, name, "/sm/puri/OSK0", "sm.puri.OSK0", NULL, &err);
+    proxy = g_dbus_proxy_new_sync (connection->gobj (), G_DBUS_PROXY_FLAGS_NONE, NULL, name.c_str (), "/sm/puri/OSK0", "sm.puri.OSK0", NULL, &err);
     if (err) printf ("%s\n", err->message);
-    gtk_widget_show_all (GTK_WIDGET (user_data));
+    plugin->show_all ();
 }
 
 /* Callback for Squeekboard disappearing on D-Bus */
 
-static void sb_cb_name_unowned (GDBusConnection *, const gchar *, gpointer user_data)
+void WidgetSqueek::sb_cb_name_unowned (const Glib::RefPtr<Gio::DBus::Connection>&, const Glib::ustring&)
 {
-    gtk_widget_hide (GTK_WIDGET (user_data));
+    plugin->hide ();
 }
 
-void WidgetSqueek::init (Gtk::HBox *container)
+void WidgetSqueek::widget_set_icon (void)
+{
+    set_taskbar_icon (GTK_WIDGET (icon->gobj ()), "squeekboard");
+}
+
+void WidgetSqueek::widget_init (Gtk::HBox *container)
 {
     /* Create the button */
     plugin = std::make_unique <Gtk::Button> ();
@@ -95,20 +94,18 @@ void WidgetSqueek::init (Gtk::HBox *container)
     plugin->signal_clicked().connect (sigc::mem_fun (*this, &WidgetSqueek::on_button_press_event));
     plugin->set_tooltip_text (_("Click to show or hide the virtual keyboard"));
 
-    /* Setup structure */
-    icon_timer = Glib::signal_idle().connect (sigc::mem_fun (*this, &WidgetSqueek::set_icon));
-
     /* Add long press for right click */
     gesture = add_long_press (GTK_WIDGET (plugin->gobj ()), NULL, NULL);
 
     /* Set up callbacks to see if squeekboard is on D-Bus */
-    g_bus_watch_name (G_BUS_TYPE_SESSION, "sm.puri.OSK0", G_BUS_NAME_WATCHER_FLAGS_NONE, sb_cb_name_owned, sb_cb_name_unowned, (*plugin).gobj(), NULL);
+    owner_id = Gio::DBus::watch_name (Gio::DBus::BusType::BUS_TYPE_SESSION, "sm.puri.OSK0",
+        sigc::mem_fun (this, &WidgetSqueek::sb_cb_name_owned), sigc::mem_fun (this, &WidgetSqueek::sb_cb_name_unowned));
 }
 
 WidgetSqueek::~WidgetSqueek()
 {
+    if (owner_id) Gio::DBus::unwatch_name (owner_id);
     g_object_unref (gesture);
-    icon_timer.disconnect ();
 }
 
 /* End of file */
