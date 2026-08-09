@@ -88,9 +88,9 @@ void WidgetSqueek::widget_init (Gtk::HBox *container)
     plugin->set_name (PLUGIN_NAME);
     container->pack_start (*plugin, false, false);
 
-    /* Create the icon */
-    icon = std::make_unique <Gtk::Image> ();
-    plugin->add (*icon.get());
+    /* Create the icon - owned by plugin once added, not by us (see squeek.hpp) */
+    icon = new Gtk::Image ();
+    plugin->add (*icon);
     plugin->signal_clicked().connect (sigc::mem_fun (*this, &WidgetSqueek::on_button_press_event));
     plugin->set_tooltip_text (_("Click to show or hide the virtual keyboard"));
 
