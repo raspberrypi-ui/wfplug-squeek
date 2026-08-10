@@ -88,7 +88,7 @@ void WidgetSqueek::widget_init (Gtk::HBox *container)
     plugin->set_name (PLUGIN_NAME);
     container->pack_start (*plugin, false, false);
 
-    /* Create the icon - owned by plugin once added, not by us (see squeek.hpp) */
+    /* Create the icon */
     icon = new Gtk::Image ();
     plugin->add (*icon);
     plugin->signal_clicked().connect (sigc::mem_fun (*this, &WidgetSqueek::on_button_press_event));
