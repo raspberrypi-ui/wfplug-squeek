@@ -1,3 +1,9 @@
+wfplug-squeek (1.7) trixie; urgency=medium
+
+  * Possible fix for reload crash
+
+ -- Simon Long <simon@raspberrypi.com>  Mon, 10 Aug 2026 17:18:27 +0100
+
 wfplug-squeek (1.6) trixie; urgency=medium
 
   * Modify for latest plugin architecture

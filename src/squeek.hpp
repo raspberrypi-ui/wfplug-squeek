@@ -41,11 +41,7 @@ extern "C" {
 class WidgetSqueek : public PanelWidget
 {
     std::unique_ptr <Gtk::Button> plugin;
-    Gtk::Image *icon;   // non-owning - becomes a child of plugin in widget_init(),
-                        // which then owns its lifetime; must not be independently
-                        // destroyed by a member unique_ptr while still parented
-                        // (member destruction order runs icon before plugin,
-                        // which was corrupting the heap - see widget_init()).
+    Gtk::Image *icon;
 
     GtkGesture *gesture;
 
