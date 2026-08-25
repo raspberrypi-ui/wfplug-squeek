@@ -33,7 +33,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <gtkmm/image.h>
 
 extern "C" {
-#include "lxutils.h"
+#include "plugin.h"
 }
 
 #define PLUGIN_TITLE N_("Squeekboard")
