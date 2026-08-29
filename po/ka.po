@@ -1,0 +1,26 @@
+# Georgian translation for wfplug_squeek.
+# Copyright (C) 2026 wfplug_squeek's authors.
+# This file is distributed under the same license as the wfplug_squeek package.
+# Ekaterine Papava <papava.e@gtu.ge>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: wfplug_squeek\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-02-19 18:40+0100\n"
+"PO-Revision-Date: 2026-08-29 15:13+0200\n"
+"Last-Translator: Ekaterine Papava <papava.e@gtu.ge>\n"
+"Language-Team: Georgian <(nothing)>\n"
+"Language: ka\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.9\n"
+
+#: src/squeek.cpp:97
+msgid "Click to show or hide the virtual keyboard"
+msgstr "დააწკაპუნეთ ვირტუალური კლავიატურის საჩვენებლად, ან დასამალად"
+
+#: src/squeek.hpp:40
+msgid "Squeekboard"
+msgstr "Squeekboard"
