@@ -35,6 +35,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 extern "C" {
 #include "lxutils.h"
+#include <libudev.h>
 }
 
 #define PLUGIN_TITLE N_("Squeekboard")
@@ -46,6 +47,7 @@ class WayfireSqueek : public WayfireWidget
     Glib::RefPtr<Gtk::GestureLongPress> gesture;
 
     sigc::connection icon_timer;
+    guint udev_watch;
 
   public:
 

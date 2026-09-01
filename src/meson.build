@@ -1,11 +1,12 @@
 gtkmm = dependency('gtkmm-3.0', version: '>=3.24')
 wfpanel = dependency('wf-panel-pi')
+libudev = dependency('libudev')
 
 wsources = files(
   'squeek.cpp'
 )
 
-wdeps = [ gtkmm, wfpanel ]
+wdeps = [ gtkmm, wfpanel, libudev ]
 
 wargs = [ '-DPACKAGE_DATA_DIR="' + wresource_dir + '"', '-DGETTEXT_PACKAGE="wfplug_' + meson.project_name() +'"' ]
 
