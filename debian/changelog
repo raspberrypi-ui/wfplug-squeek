@@ -1,3 +1,9 @@
+wfplug-squeek (1.11) trixie; urgency=medium
+
+  * Add tooltip for widget browser
+
+ -- Simon Long <simon@raspberrypi.com>  Mon, 21 Sep 2026 09:48:42 +0100
+
 wfplug-squeek (1.10) trixie; urgency=medium
 
   * Version bump for build

@@ -37,6 +37,7 @@ extern "C" {
 }
 
 #define PLUGIN_TITLE N_("Squeekboard")
+#define PLUGIN_DESC N_("On-screen keyboard for touch devices")
 
 class WidgetSqueek : public PanelWidget
 {
